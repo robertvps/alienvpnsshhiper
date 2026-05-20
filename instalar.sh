@@ -19,10 +19,9 @@ _auto_update_menu() {
         rm -f /bin/menu.tmp
     fi
 }
-# Executa a checagem em segundo plano para não travar o menu
 _auto_update_menu &
 
-# Definição das Cores Exatas do Print
+# Definição das Cores Exatas
 VERMELHO='\033[1;31m'
 VERDE='\033[1;32m'
 AMARELO='\033[1;33m'
@@ -33,9 +32,9 @@ SEM_COR='\033[0m'
 
 # Captura de Dados do Sistema
 OS_VERSAO=$(lsb_release -si 2>/dev/null || echo "Ubuntu")
-OS_RELEASE=$(lsb_release -sr 2>/dev/null || echo "22")
+OS_RELEASE=$(lsb_release -sr 2>/dev/null || echo "22.04")
 RAM_TOTAL=$(free -h | awk '/^Mem:/ {print $2}')
-RAM_USO=$(free | awk '/^Mem:/ {printf("%.2f%%"), $3/$2*100}')
+RAM_USO=$(free | awk '/^Mem:/ {printf("%.0f%%"), $3/$2*100}')
 NUCLEOS=$(nproc)
 CPU_USO=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-7.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}')
 TOTAL_USER=$(awk -F : '$3 >= 500 {print $1}' /etc/passwd | grep -v '^nobody' | wc -l)
@@ -53,7 +52,7 @@ menu_principal() {
     printf "${VERMELHO} Conectados: ${SEM_COR}%-4s│${VERMELHO} Vencidos: ${SEM_COR}%-10s│${VERMELHO} Criados: ${SEM_COR}%-5s\n" "0" "0" "$TOTAL_USER"
     echo -e "${AZUL}├────────────────────────────────────────────────────────┤${SEM_COR}"
     
-    # Colunas idênticas ao primeiro print (01 a 22)
+    # Colunas com as setinhas (➔) alinhadas
     printf "${AZUL}│${VERMELHO}│%02d│${SEM_COR} ➔ %-20s ${AZUL}│${VERMELHO}│%02d│${SEM_COR} ➔ %-17s${AZUL}│\n" 1 "CRIAR CONTA" 12 "OTIMIZAR"
     printf "${AZUL}│${VERMELHO}│%02d│${SEM_COR} ➔ %-20s ${AZUL}│${VERMELHO}│%02d│${SEM_COR} ➔ %-17s${AZUL}│\n" 2 "CRIAR CONTA TESTE" 13 "BACKUP"
     printf "${AZUL}│${VERMELHO}│%02d│${SEM_COR} ➔ %-20s ${AZUL}│${VERMELHO}│%02d│${SEM_COR} ➔ %-11s ${VERMELHO}×${AZUL} │\n" 3 "REMOVER CONTA" 14 "LIMITER"
@@ -81,13 +80,11 @@ menu_principal() {
 
 submenu_avancado() {
     clear
-    # Cabeçalho simulando a navegação do segundo print
     echo -e "${AZUL}│${VERMELHO}03│${SEM_COR} ➔ REMOVER CONTA             ${VERMELHO}│14│${SEM_COR} ➔ LIMITER ${VERMELHO}×${SEM_COR}"
     echo -e "${AZUL}┌────────────────────────────────────────────────────────┐${SEM_COR}"
     echo -e "${AZUL}│${AZUL}                     AVANÇADO                           ${AZUL}│${SEM_COR}"
     echo -e "${AZUL}└────────────────────────────────────────────────────────┘${SEM_COR}"
     
-    # Opções do Submenu (Segundo print)
     printf "${AZUL}│${CENARIO}│%02d│${SEM_COR} ➔ %-46s${AZUL}│\n" 1 "SYNC P-WEB"
     printf "${AZUL}│${CENARIO}│%02d│${SEM_COR} ➔ %-46s${AZUL}│\n" 2 "MEMORIA VIRTUAL"
     printf "${AZUL}│${CENARIO}│%02d│${SEM_COR} ➔ %-42s ${VERMELHO}×${AZUL}│\n" 3 "BOT TELEGRAM (GERENCIAR MAQUINA)"
@@ -107,11 +104,10 @@ submenu_avancado() {
     
     case $subopt in
         0|00) menu_principal ;;
-        *) echo -e "${VERMELHO}Função em desenvolvimento no submódulo!${SEM_COR}"; sleep 1; submenu_avancado ;;
+        *) echo -e "${VERMELHO}Função em desenvolvimento!${SEM_COR}"; sleep 1; submenu_avancado ;;
     esac
 }
 
-# Inicializa o Menu principal
 while true; do
     menu_principal
 done
