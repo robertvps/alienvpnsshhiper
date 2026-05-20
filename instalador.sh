@@ -1,119 +1,135 @@
-mkdir -p /etc/sshplus
-mkdir -p /etc/sshplus/v2ray
-mkdir -p /etc/sshplus/vessas
-
-# 2. EMULAÇÃO DOS SUBMÓDULOS (Arquivos internos que o instalador baixa)
-# Opção 01 - Criar Usuário
-cat << 'EOF' > /etc/sshplus/criarusuario
+cat << 'EOF' > $HOME/instalador.sh
 #!/bin/bash
 clear
-echo -e "\033[1;32m--- CRIAR USUÁRIO SSH/VPN ---\033[0m"
-read -p "Nome do Usuário: " user
-read -p "Senha: " pass
-read -p "Dias de Validade: " dias
-if id "$user" &>/dev/null; then
-    echo -e "\033[1;31mUsuário já existe!\033[0m"
-else
-    useradd -M -s /bin/false -e $(date -d "$dias days" +%Y-%m-%d) "$user" 2>/dev/null
-    echo "$user:$pass" | chpasswd
-    echo -e "\033[1;32mUsuário $user criado com sucesso!\033[0m"
-fi
-sleep 2
-EOF
-chmod +x /etc/sshplus/criarusuario
 
-# Opção 12 - Modos de Conexão (Submenu de Protocolos)
-cat << 'EOF' > /etc/sshplus/conexao
-#!/bin/bash
-clear
-while true; do
-    echo -e "\033[1;34m┌────────────────────────────────────────┐\033[0m"
-    echo -e "\033[1;34m│\033[0m         \033[1;33mSUBMENU: MODOS DE CONEXÃO\033[0m      \033[1;34m│\033[0m"
-    echo -e "\033[1;34m├────────────────────────────────────────┤\033[0m"
-    echo -e "\033[1;34m│\033[0m [1] ATIVAR SSH DIRECTO                  \033[1;34m│\033[0m"
-    echo -e "\033[1;34m│\033[0m [2] CONFIGURAR SSL/PROXY                \033[1;34m│\033[0m"
-    echo -e "\033[1;34m│\033[0m [3] GERENCIAR V2RAY (SUBPASTA)          \033[1;34m│\033[0m"
-    echo -e "\033[1;34m│\033[0m [0] VOLTAR AO MENU PRINCIPAL            \033[1;34m│\033[0m"
-    echo -e "\033[1;34m└────────────────────────────────────────┘\033[0m"
-    read -p "Opção: " subopt
-    case $subopt in
-        1) echo "Configurando SSH nas portas padrão..."; sleep 2 ;;
-        2) echo "Gerenciando túnel SSL..."; sleep 2 ;;
-        3) 
-            # Chama o script que fica dentro da subpasta v2ray
-            if [ -f /etc/sshplus/v2ray/v2raymenu ]; then
-                bash /etc/sshplus/v2ray/v2raymenu
-            else
-                echo "Módulo V2Ray não instalado."
-                sleep 2
-            fi
-            ;;
-        0) break ;;
-    esac
-done
-EOF
-chmod +x /etc/sshplus/conexao
+# Configurações do seu Repositório (Onde o script vai se atualizar)
+USUARIO_GITHUB="robertvps"
+REPOSITORIO="robertvps"
+BRANCH="main"
+URL_RAW="https://raw.githubusercontent.com/$USUARIO_GITHUB/$REPOSITORIO/$BRANCH"
 
-# Script da Subpasta v2ray
-cat << 'EOF' > /etc/sshplus/v2ray/v2raymenu
-#!/bin/bash
-clear
-echo -e "\033[1;35m--- GERENCIADOR V2RAY (PASTA INTERNA) ---\033[0m"
-echo "[1] Adicionar Usuário V2Ray"
-echo "[2] Deletar Usuário V2Ray"
-echo "[0] Voltar"
-read -p "Escolha: " v2opt
-sleep 1
-EOF
-chmod +x /etc/sshplus/v2ray/v2raymenu
+# Verificar se o usuário é root
+[[ "$(whoami)" != "root" ]] && {
+    echo -e "\033[1;37m[\033[1;31mErro\033[1;37m] - Você precisa executar como root\033[0m"
+    rm -f $HOME/instalador.sh > /dev/null 2>&1; exit 0
+}
 
+cd $HOME
 
-# 3. CÓDIGO DO MENU DIRECIONADOR PRINCIPAL
-VERMELHO='\033[1;31m'
-VERDE='\033[1;32m'
-AMARELO='\033[1;33m'
-AZUL='\033[1;34m'
-CENARIO='\033[1;36m'
-SEM_COR='\033[0m'
+# ==========================================
+# FUNÇÃO DE AUTO-ATUALIZAÇÃO
+# ==========================================
+_atualizar_script() {
+    echo -e "\n\033[1;36m[+] Verificando atualizações no seu GitHub ($USUARIO_GITHUB)...\033[0m"
+    
+    # Baixa a versão mais recente do instalador do seu próprio github temporariamente
+    wget -q -O $HOME/instalador.tmp "$URL_RAW/instalador.sh"
+    
+    if [ $? -eq 0 ] && [ -s $HOME/instalador.tmp ]; then
+        mv $HOME/instalador.tmp $HOME/instalador.sh
+        chmod +x $HOME/instalador.sh
+        echo -e "\033[1;32m[+] O Script foi atualizado com sucesso para a última versão!\033[0m"
+    else
+        rm -f $HOME/instalador.tmp
+        echo -e "\033[1;31m[-] Não foi possível buscar atualizações. Mantendo versão atual.\033[0m"
+    fi
+}
 
-OS_VERSAO=$(lsb_release -si 2>/dev/null || echo "Ubuntu")
-OS_RELEASE=$(lsb_release -sr 2>/dev/null || echo "22.04")
-RAM_TOTAL=$(free -h | awk '/^Mem:/ {print $2}')
-NUCLEOS=$(nproc)
+# Executa a checagem de atualização assim que inicia
+_atualizar_script
 
-while true; do
-    HORA_ATUAL=$(date +%H:%M:%S)
+# Tela de Boas-Vindas Personalizada
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\E[38;5;118m        ⇱ GERENCIADOR ROBERT.VPS ATUALIZADO ⇲               "
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo ""
+echo -e "               \033[1;32mINSTALADOR LEGÍTIMO E AUTÔNOMO\033[0m"
+echo ""
+echo -e "\033[1;31m• \033[1;37mInstalação de ferramentas de gerenciamento VPS\033[0m"
+echo -e "\033[1;31m• \033[1;37mAuto-atualização via GitHub habilitada.\033[0m"
+echo ""
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo ""
+
+echo -ne "\033[38;5;118mENTER \033[1;37mpara continuar a \033[1;31mINSTALAÇÃO : \033[0m"; read x
+[[ $x = @(n|N) ]] && exit
+
+# Sincronizando e baixando os menus principais do seu próprio repositório
+echo -e "\n\033[1;33m[+] Baixando componentes do seu repositório...\033[0m"
+cd /bin/ > /dev/null 2>&1
+
+# Aqui ele baixa o seu menu visual (instalar.sh) e salva como 'menu'
+wget -O /bin/menu "$URL_RAW/instalar.sh" > /dev/null 2>&1
+chmod +x /bin/menu > /dev/null 2>&1
+
+echo "/bin/menu" > /bin/h && chmod +x /bin/h > /dev/null 2>&1
+
+cd $HOME
+
+# Gerenciamento de Base de Dados Existente
+[[ -f "$HOME/usuarios.db" ]] && {
     clear
-    echo -e "${AZUL}┌────────────────────────────────────────────────────────┐${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR}                ${VERMELHO}« SSHPLUS MANAGER PRO »${SEM_COR}                ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}├────────────────────────────────────────────────────────┤${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${CENARIO}SISTEMA${SEM_COR}           ${CENARIO}MEMORIA RAM${SEM_COR}       ${CENARIO}PROCESSADOR${SEM_COR}    ${AZUL}│${SEM_COR}"
-    printf "${AZUL}│${SEM_COR} OS: %-13s Total: %-11s Nucleos: %-10s ${AZUL}│\n${SEM_COR}" "$OS_VERSAO $OS_RELEASE" "$RAM_TOTAL" "$NUCLEOS"
-    printf "${AZUL}│${SEM_COR} Hora: %-47s ${AZUL}│\n${SEM_COR}" "$HORA_ATUAL"
-    echo -e "${AZUL}├────────────────────────────────────────────────────────┤${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${VERDE}Onlines:${SEM_COR} 0        ${VERMELHO}Expirados:${SEM_COR} 0      ${AMARELO}Total:${SEM_COR} 0         ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}├────────────────────────────────────────────────────────┤${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[01]${SEM_COR} • CRIAR USUARIO      ${AMARELO}[13]${SEM_COR} • SPEEDTEST            ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[02]${SEM_COR} • CRIAR TESTE        ${AMARELO}[14]${SEM_COR} • OTIMIZAR             ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[03]${SEM_COR} • REMOVER USUARIO    ${AMARELO}[15]${SEM_COR} • TRAFEGO              ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[04]${SEM_COR} • RENOVAR USUARIO    ${AMARELO}[16]${SEM_COR} • FIREWALL             ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[05]${SEM_COR} • USUARIOS ONLINE    ${AMARELO}[17]${SEM_COR} • INFO SISTEMA         ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[06]${SEM_COR} • ALTERAR DATA       ${AMARELO}[18]${SEM_COR} • BANNER               ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[07]${SEM_COR} • ALTERAR LIMITE     ${AMARELO}[19]${SEM_COR} • LIMITAR SSH          ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[08]${SEM_COR} • ALTERAR SENHA      ${AMARELO}[20]${SEM_COR} • BADVPN               ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[09]${SEM_COR} • REMOVER EXPIRADOS  ${AMARELO}[21]${SEM_COR} • AUTO MENU            ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[10]${SEM_COR} • RELATORIO USUARIOS ${AMARELO}[22]${SEM_COR} • CHATBOTS             ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[11]${SEM_COR} • BACKUP DE USUARIOS ${AMARELO}[23]${SEM_COR} • MAIS OPCOES    →     ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}│${SEM_COR} ${AMARELO}[12]${SEM_COR} • MODOS DE CONEXAO   ${AMARELO}[00]${SEM_COR} • SAIR DO MENU         ${AZUL}│${SEM_COR}"
-    echo -e "${AZUL}└────────────────────────────────────────────────────────┘${SEM_COR}"
+    echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    echo -e "                    \033[1;37m• \033[1;31mATENÇÃO \033[1;37m• "
+    echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    echo -e "\033[1;37mUma base de Dados de Usuários \033[1;32m(usuarios.db) \033[1;37mFoi Encontrada!\033[0m"
+    echo -e "Deseja mantê-la preservando o limite de Conexões simultâneas?"
+    echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    echo -e "[\033[1;31m1\033[1;37m] Manter Base de Dados Atual"
+    echo -e "[\033[1;31m2\033[1;37m] Criar uma Nova Base de Dados"
+    echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
     echo ""
-    echo -n "INFORME UMA OPÇÃO: "
-    read opcao
+    tput setaf 2 ; tput bold ; read -p "Opção ?: " -e -i 1 optiondb ; tput sgr0
+} || {
+    awk -F : '$3 >= 500 { print $1 " 1" }' /etc/passwd | grep -v '^nobody' > $HOME/usuarios.db
+}
 
-    case $opcao in
-        1|01) [ -f /etc/sshplus/criarusuario ] && bash /etc/sshplus/criarusuario ;;
-        12) [ -f /etc/sshplus/conexao ] && bash /etc/sshplus/conexao ;;
-        0|00) clear; exit 0 ;;
-        *) echo -e "\n${VERMELHO}Módulo em execução ou aguardando dependências...${SEM_COR}"; sleep 1 ;;
-    esac
+[[ "$optiondb" = '2' ]] && awk -F : '$3 >= 500 { print $1 " 1" }' /etc/passwd | grep -v '^nobody' > $HOME/usuarios.db
+
+clear
+echo -e "\033[1;32m[+] ATUALIZANDO O SISTEMA (Aguarde...)\033[0m"
+apt-get update -y > /dev/null 2>&1
+apt-get install lolcat figlet curl git boxes -y > /dev/null 2>&1
+
+echo -e "\033[1;32m[+] INSTALANDO DEPENDÊNCIAS PYTHON ESSENCIAIS...\033[0m"
+apt install pip python3-pip uuid-runtime socat python3 -y > /dev/null 2>&1
+
+_pacotes=("bc" "screen" "nano" "unzip" "lsof" "netstat" "net-tools" "dos2unix" "nload" "jq" "firewalld")
+for _prog in ${_pacotes[@]}; do
+    echo -e "    -> Instalando ferramenta: $_prog"
+    apt install $_prog -y > /dev/null 2>&1
 done
+
+pip install speedtest-cli > /dev/null 2>&1
+
+echo -e "\033[1;32m[+] CONFIGURANDO PORTAS E REGRAS DE FIREWALL...\033[0m"
+[[ -f "/usr/sbin/ufw" ]] && { ufw allow 443/tcp; ufw allow 80/tcp; ufw allow 3128/tcp; ufw allow 8799/tcp; ufw allow 8080/tcp; } > /dev/null 2>&1
+
+clear
+echo ""
+cd $HOME
+
+# Customizando o seu terminal (.bashrc) para exibir sua marca ao logar na VPS
+cat /dev/null > /root/.bashrc
+echo "clear" >> /root/.bashrc
+echo 'DATE=$(date +"%d-%m-%y")' >>/root/.bashrc
+echo 'TIME=$(date +"%T")' >>/root/.bashrc
+echo 'echo -e "\033[1;35m======================================\033[0m"' >>/root/.bashrc
+echo 'echo -e "\033[1;36m         ROBERT.VPS MANAGER           \033[0m"' >>/root/.bashrc
+echo 'echo -e "\033[1;35m======================================\033[0m"' >>/root/.bashrc
+echo 'echo -e "\033[1;32m NOME DO SERVIDOR : \033[38;5;196m$HOSTNAME"' >>/root/.bashrc
+echo 'echo -e "\033[1;32m SERVIDOR LIGADO À : \033[1;31m$(uptime -p)"' >>/root/.bashrc
+echo 'echo -e "\033[1;32m DATA : \033[1;31m$DATE"' >>/root/.bashrc
+echo 'echo -e "\033[1;32m HORA : \033[1;31m$TIME"' >>/root/.bashrc
+echo 'echo -e "\033[1;32m DIGITE : \033[1;31mmenu\033[1;37m"' >>/root/.bashrc
+echo 'echo -e ""' >>/root/.bashrc
+
+date=$(date '+%Y-%m-%d <> %H:%M:%S')
+echo -e "\033[1;37m Servidor                           $date"
+echo -e "\033[1;37m                INSTALACAO CONCLUIDA                \033[1;33m "
+echo -e "\033[1;33mPARA INICIAR DIGITE: \033[1;36mmenu\033[1;33m E DÊ ENTER \033[0m"
+
+rm -f $HOME/instalador.sh && cat /dev/null > ~/.bash_history && history -c
+EOF
+chmod +x $HOME/instalador.sh
+$HOME/instalador.sh
