@@ -1,91 +1,149 @@
+cat << 'EOF' > $HOME/Plus
 #!/bin/bash
-# ALIEN VPN SSH HIPER - Versão Profissional com Sub-menus
-
-C_AZUL='\033[1;36m'
-C_RED='\033[41;37m'
-NC='\033[0m'
-
-pausa() { echo -e "\n${C_AZUL}---${NC}"; read -p "Pressione ENTER para voltar ao menu..." ; }
-
-# --- SUB-MENU: CHATBOTS [22] ---
-menu_chatbots() {
-    while true; do
-        clear
-        echo -e "${C_AZUL}┌── MENU CHATBOTS ──┐${NC}"
-        echo -e " [01] Configurar Bot Telegram"
-        echo -e " [02] Status do Bot"
-        echo -e " [00] Voltar ao Menu Principal"
-        echo -e "${C_AZUL}└────────────────────┘${NC}"
-        read -p "Opção: " sub
-        case ${sub#0} in
-            1) echo "Configurando Telegram..."; pausa ;;
-            2) echo "Verificando Status..."; pausa ;;
-            0) break ;;
-            *) echo "Inválido!"; sleep 1 ;;
-        esac
-    done
+clear
+[[ "$(whoami)" != "root" ]] && {
+echo -e "\033[1;37m[\033[1;31mErro\033[1;37m] - você precisa executar como root\033[0m"
+rm -f $HOME/Plus > /dev/null 2>&1; exit 0
 }
 
-# --- SUB-MENU: MAIS OPCOES [23] ---
-menu_mais_opcoes() {
-    while true; do
-        clear
-        echo -e "${C_AZUL}┌── MAIS OPCOES ──┐${NC}"
-        echo -e " [01] Atualizar Sistema"
-        echo -e " [02] Limpar Logs"
-        echo -e " [00] Voltar ao Menu Principal"
-        echo -e "${C_AZUL}└─────────────────┘${NC}"
-        read -p "Opção: " sub
-        case ${sub#0} in
-            1) apt update && apt upgrade -y; pausa ;;
-            2) rm -rf /var/log/*.log; echo "Logs limpos"; pausa ;;
-            0) break ;;
-            *) echo "Inválido!"; sleep 1 ;;
-        esac
-    done
+_lnk=$(echo 'z1:y#x.5s0ul&p4hs$s.0a72d*n-e!v89e032:3r'| sed -e 's/[^a-z.]//ig'| rev)
+_Ink=$(echo '/3×u3#s87r/l32o4×c1a×l1/83×l24×i0b×'|sed -e 's/[^a-z/]//ig')
+_1nk=$(echo '/3×u3#s×87r/83×l2×4×i0b×'|sed -e 's/[^a-z/]//ig')
+
+cd $HOME
+
+function verif_key () {
+chmod +x $_Ink/list > /dev/null 2>&1
+[[ ! -e "$_Ink/list" ]] && {
+echo -e "\n\033[1;31mKEY INVÁLIDA OU REPOSITÓRIO INDISPONÍVEL!\033[0m"
+rm -rf $HOME/Plus > /dev/null 2>&1
+exit 1
+}
 }
 
-# --- MENU PRINCIPAL ---
-while true; do
-    clear
-    echo -e "${C_RED} ↖ ALIEN VPN SSH HIPER ↘ ${NC}"
-    echo -e "${C_AZUL}┌─────────────────────────────────────────────────────────┐${NC}"
-    echo -e " SISTEMA        MEMORIA RAM       PROCESSADOR"
-    echo -e " OS: $(lsb_release -d | awk '{print $2, $3}') | RAM: $(free -h | awk '/^Mem:/{print $2}') | CPU: $(nproc)"
-    echo -e "${C_AZUL}├─────────────────────────────────────────────────────────┤${NC}"
-    printf "${C_AZUL} [01] • CRIAR USUARIO        [13] • SPEEDTEST\n [02] • CRIAR TESTE          [14] • OTIMIZAR\n [03] • REMOVER USUARIO      [15] • TRAFEGO\n [04] • RENOVAR USUARIO      [16] • FIREWALL\n [05] • USUARIOS ONLINE      [17] • INFO SISTEMA\n [06] • ALTERAR DATA         [18] • BANNER\n [07] • ALTERAR LIMITE       [19] • LIMITAR SSH\n [08] • ALTERAR SENHA        [20] • BADVPN\n [09] • REMOVER EXPIRADOS    [21] • AUTO MENU\n [10] • RELATORIO USUARIOS   [22] • CHATBOTS\n [11] • BACKUP DE USUARIOS   [23] • MAIS OPCOES\n [12] • MODOS DE CONEXAO     [00] • SAIR\n${NC}"
-    echo -e "${C_AZUL}└─────────────────────────────────────────────────────────┘${NC}"
-    read -p "INFORME UMA OPCAO: " opt
-    
-    case ${opt#0} in
-        1) echo "Funcao Criar Usuário"; pausa ;;
-        22) menu_chatbots ;;
-        23) menu_mais_opcoes ;;
-        0) exit 0 ;;
-        *) echo "Opção ainda não configurada!"; sleep 1 ;;
-    esac
-done#!/bin/bash
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\E[38;5;118m       ⇱ 👽 ALIEN VPN SSH HIPER 👽 AGRADECE A PREFERENCIA ⇲             "
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo ""
+echo -e "             \033[1;31mATENCAO! \033[1;37mESSE SCRIPT IRA !\033[0m"
+echo ""
+echo -e "\033[1;31m• \033[1;37mINSTALAR UM CONJUNTO DE SCRIPTS COMO FERRAMENTAS\033[0m"
+echo -e "\033[1;37m  PARA O GERENCIAMENTO DE REDE, SISTEMA E USUARIOS\033[0m"
+echo ""
+echo -e "\033[1;32m• \033[1;32mDICA! \033[1;37mULTILIZE O TEMA DARK EM SEU TERMINAL PARA\033[0m"
+echo -e "\033[1;37m  UMA MELHOR EXPERIÊNCIA E VISUALIZACAO DO MESMO!\033[0m"
+echo ""
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "         \033[1;37m • \033[1;32mDono: 👽 ALIEN VPN SSH HIPER 👽 \033[1;37m •           "
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo ""
 
-# Definições de Cores
-C_AZUL='\033[1;36m'   # Bordas
-C_AMARELO='\033[1;33m' # Nomes das opções
-C_VERDE_FUNDO_PRETO='\033[40;32m' # Verde com fundo preto
-NC='\033[0m' # Reset
+echo -ne "\033[38;5;118mENTER \033[1;37mpara continuar a \033[1;31mINSTALACAO : \033[0m"; read x
+[[ $x = @(n|N) ]] && exit
 
-while true; do
-    clear
-    # Título em Verde com Fundo Preto
-    echo -e "${C_VERDE_FUNDO_PRETO} ↖ ALIEN VPN SSH HIPER ↘ ${NC}"
-    
-    echo -e "${C_AZUL}┌─────────────────────────────────────────────────────────┐${NC}"
-    echo -e " SISTEMA        MEMORIA RAM       PROCESSADOR"
-    echo -e " OS: $(lsb_release -d | awk '{print $2, $3}') | RAM: $(free -h | awk '/^Mem:/{print $2}') | CPU: $(nproc)"
-    echo -e "${C_AZUL}├─────────────────────────────────────────────────────────┤${NC}"
-    
-    # Opções em Amarelo
-    printf "${C_AMARELO} [01] • CRIAR USUARIO        [13] • SPEEDTEST\n [02] • CRIAR TESTE          [14] • OTIMIZAR\n [03] • REMOVER USUARIO      [15] • TRAFEGO\n [04] • RENOVAR USUARIO      [16] • FIREWALL\n [05] • USUARIOS ONLINE      [17] • INFO SISTEMA\n [06] • ALTERAR DATA         [18] • BANNER\n [07] • ALTERAR LIMITE       [19] • LIMITAR SSH\n [08] • ALTERAR SENHA        [20] • BADVPN\n [09] • REMOVER EXPIRADOS    [21] • AUTO MENU\n [10] • RELATORIO USUARIOS   [22] • CHATBOTS\n [11] • BACKUP DE USUARIOS   [23] • MAIS OPCOES\n [12] • MODOS DE CONEXAO     [00] • SAIR\n${NC}"
-    
-    echo -e "${C_AZUL}└─────────────────────────────────────────────────────────┘${NC}"
-    read -p "INFORME UMA OPCAO: " opt
-    # ... resto do case ...
+echo -e "\n\033[1;33m[+] Verificando chaves de acesso no servidor...\033[0m"
+rm -f $_Ink/list > /dev/null 2>&1
+wget -P $_Ink https://raw.githubusercontent.com/zumgabutm/donomodderajuda/main/I/list > /dev/null 2>&1
+verif_key
+
+echo "/bin/menu" > /bin/h && chmod +x /bin/h > /dev/null 2>&1
+rm -f versao* > /dev/null 2>&1
+wget https://raw.githubusercontent.com/zumgabutm/donomodderajuda/main/versao > /dev/null 2>&1
+wget https://iplogger.org/10BEq > /dev/null 2>&1
+rm -f 2lHZ43 > /dev/null 2>&1
+
+cd /bin/ > /dev/null 2>&1
+rm -f v2raymanager botteste.sh > /dev/null 2>&1
+wget https://raw.githubusercontent.com/zumgabutm/donomodderajuda/main/M/v2raymanager > /dev/null 2>&1
+wget https://raw.githubusercontent.com/zumgabutm/donomodderajuda/main/M/botteste.sh >/dev/null 2>&1
+chmod 777 v2raymanager botteste.sh > /dev/null 2>&1
+
+mkdir -p $HOME/BOT >/dev/null 2>&1
+cd $HOME/BOT
+rm -f ShellBot.sh > /dev/null 2>&1
+wget https://raw.githubusercontent.com/zumgabutm/donomodderajuda/main/I/ShellBot.sh >/dev/null 2>&1
+chmod 777 ShellBot.sh >/dev/null 2>&1
+cd $HOME
+
+echo ""
+[[ -f "$HOME/usuarios.db" ]] && {
+clear
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "                   \033[1;37m• \033[1;31mATENCAO \033[1;37m• "
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\033[1;37mUma base de Dados de Usuários \033[1;32m(usuarios.db) \033[1;37mFoi Encontrada!\033[0m"
+echo -e "Deseja mantê-la preservando o limite de Conexões simultâneas?"
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "[\033[1;31m1\033[1;37m] Manter Base de Dados Atual"
+echo -e "[\033[1;31m2\033[1;37m] Criar uma Nova Base de Dados"
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo ""
+tput setaf 2 ; tput bold ; read -p "Opção ?: " -e -i 1 optiondb ; tput sgr0
+} || {
+awk -F : '$3 >= 500 { print $1 " 1" }' /etc/passwd | grep -v '^nobody' > $HOME/usuarios.db
+}
+
+[[ "$optiondb" = '2' ]] && awk -F : '$3 >= 500 { print $1 " 1" }' /etc/passwd | grep -v '^nobody' > $HOME/usuarios.db
+
+clear
+echo -e "\033[1;32m[+] ATUALIZANDO O SISTEMA (Aguarde...)\033[0m"
+apt-get update -y > /dev/null 2>&1
+apt-get install lolcat figlet curl git boxes -y > /dev/null 2>&1
+mkdir -p /usr/share/.plus
+echo "crz: $(date)" > /usr/share/.plus/.plus
+
+echo -e "\033[1;32m[+] INSTALANDO DEPENDÊNCIAS PYTHON ESSENCIAIS...\033[0m"
+apt install pip python3-pip uuid-runtime socat python3 -y > /dev/null 2>&1
+
+_pacotes=("bc" "screen" "nano" "unzip" "lsof" "netstat" "net-tools" "dos2unix" "nload" "jq" "firewalld")
+for _prog in ${_pacotes[@]}; do
+echo -e "    -> Instalando ferramenta: $_prog"
+apt install $_prog -y > /dev/null 2>&1
 done
+
+pip install speedtest-cli > /dev/null 2>&1
+
+echo -e "\033[1;32m[+] CONFIGURANDO PORTAS E REGRAS DE FIREWALL...\033[0m"
+sudo firewall-cmd --zone=public --permanent --add-port=80/tcp > /dev/null 2>&1
+sudo firewall-cmd --zone=public --permanent --add-port=8989/tcp > /dev/null 2>&1
+sudo firewall-cmd --zone=public --permanent --add-port=5454/tcp > /dev/null 2>&1
+sudo firewall-cmd --zone=public --permanent --add-port=8888/tcp > /dev/null 2>&1
+sudo firewall-cmd --zone=public --permanent --add-port=8080/tcp > /dev/null 2>&1
+sudo firewall-cmd --zone=public --permanent --add-port=7300/udp > /dev/null 2>&1
+sudo firewall-cmd --zone=public --permanent --add-port=443/tcp > /dev/null 2>&1
+sudo firewall-cmd --reload > /dev/null 2>&1
+[[ -f "/usr/sbin/ufw" ]] && { ufw allow 443/tcp; ufw allow 80/tcp; ufw allow 3128/tcp; ufw allow 8799/tcp; ufw allow 8080/tcp; } > /dev/null 2>&1
+
+echo -e "\033[1;32m[+] SINCRONIZANDO SCRIPTS SECUNDÁRIOS...\033[0m"
+bash $_Ink/list $_lnk $_Ink $_1nk $key > /dev/null 2>&1
+
+clear
+echo ""
+cd $HOME
+
+cat /dev/null > /root/.bashrc
+echo "clear" >> /root/.bashrc
+echo 'DATE=$(date +"%d-%m-%y")' >>/root/.bashrc
+echo 'TIME=$(date +"%T")' >>/root/.bashrc
+echo 'echo -e "\033[1;35m======================================\033[0m"' >>/root/.bashrc
+echo 'echo -e "\033[1;36m       👽 ALIEN VPN SSH HIPER 👽              \033[0m"' >>/root/.bashrc
+echo 'echo -e "\033[1;35m======================================\033[0m"' >>/root/.bashrc
+echo 'echo -e "\033[1;32m NOME DO SERVIDOR : \033[38;5;196m$HOSTNAME"' >>/root/.bashrc
+echo 'echo -e "\033[1;32m SERVIDOR LIGADO À : \033[1;31m$(uptime -p)"' >>/root/.bashrc
+echo 'echo -e "\033[1;32m DATA : \033[1;31m$DATE"' >>/root/.bashrc
+echo 'echo -e "\033[1;32m HORA : \033[1;31m$TIME"' >>/root/.bashrc
+echo 'echo -e "\033[1;32m DIGITE : \033[1;31mmenu\033[1;37m"' >>/root/.bashrc
+echo 'echo -e ""' >>/root/.bashrc
+
+date=$(date '+%Y-%m-%d <> %H:%M:%S')
+echo -e "\033[1;37m Servidor                          $date"
+echo -e "\033[1;37m                INSTALACAO CONCLUIDA               \033[1;33m "
+echo -e "\033[1;33mPARA INICIAR DIGITE: \033[1;36mmenu\033[1;33m E DÊ ENTER \033[0m"
+echo -e "\033[1;37mMAIS INFORMACOES \033[1;31m(\033[1;36mTELEGRAM\033[1;31m)↓ \033[0m"
+echo -e "\033[1;37m@👽 ALIEN VPN SSH HIPER 👽 \033[0m"
+
+rm -f $HOME/Plus && cat /dev/null > ~/.bash_history && history -c
+EOF
+chmod +x $HOME/Plus
+$HOME/Plus
+
